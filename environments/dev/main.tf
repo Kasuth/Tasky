@@ -1,4 +1,4 @@
-form {
+terraform {
   required_version = ">= 1.0"
   backend "gcs" {
     bucket = "YOUR_TF_STATE_BUCKET_NAME" # Replace with your state bucket name
