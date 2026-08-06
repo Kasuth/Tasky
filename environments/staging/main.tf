@@ -47,6 +47,6 @@ module "staging_app" {
   app_image   = var.app_image
 }
 
-output "dev_app_public_ip" {
-  value = module.dev_app.app_public_ip
+output "staging_app_public_ip" {
+  value = module.staging_app.app_public_ip
 }

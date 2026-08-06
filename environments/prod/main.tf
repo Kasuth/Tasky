@@ -39,14 +39,14 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.google_container_cluster.gke.master_auth[0].cluster_ca_certificate)
 }
 
-module "dev_app" {
+module "prod_app" {
   source      = "../../modules/app"
   project_id  = var.project_id
-  environment = "dev"
+  environment = "prod"
   subnet_cidr = "10.10.0.0/20"
   app_image   = var.app_image
 }
 
-output "dev_app_public_ip" {
-  value = module.dev_app.app_public_ip
+output "prod_app_public_ip" {
+  value = module.prod_app.app_public_ip
 }
