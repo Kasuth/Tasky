@@ -39,10 +39,10 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.google_container_cluster.gke.master_auth[0].cluster_ca_certificate)
 }
 
-module "dev_app" {
+module "staging_app" {
   source      = "../../modules/app"
   project_id  = var.project_id
-  environment = "dev"
+  environment = "staging"
   subnet_cidr = "10.10.0.0/20"
   app_image   = var.app_image
 }
