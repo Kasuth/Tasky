@@ -1,8 +1,8 @@
 resource "kubernetes_deployment_v1" "tasky" {
   metadata {
-    name = "tasky-deployment"
+    name = "tasky-deployment-${var.environment}"
     labels = {
-      app = "tasky"
+      app = "tasky-${var.environment}"
       env = var.environment
     }
   }
@@ -12,14 +12,14 @@ resource "kubernetes_deployment_v1" "tasky" {
 
     selector {
       match_labels = {
-        app = "tasky"
+        app = "tasky-${var.environment}"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "tasky"
+          app = "tasky-${var.environment}"
           env = var.environment
         }
       }
@@ -52,23 +52,16 @@ resource "kubernetes_deployment_v1" "tasky" {
 
 resource "kubernetes_service_v1" "tasky_service" {
   metadata {
-    name = "tasky-service"
-    labels = {
-      app = "tasky"
-      env = var.environment
-    }
+    name = "tasky-service-${var.environment}" # Dynamic name
   }
-
   spec {
     selector = {
-      app = "tasky"
+      app = "tasky-${var.environment}"
     }
-
+    type = "LoadBalancer"
     port {
       port        = 8080
       target_port = 8080
     }
-
-    type = "LoadBalancer"
   }
 }
