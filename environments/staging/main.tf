@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.0"
   backend "gcs" {
-    bucket = mongodb-backups-clgcporg10-151 # Replace with your state bucket name
+    bucket = "mongodb-backups-clgcporg10-151"
     prefix = "terraform/state/dev"
   }
   required_providers {
