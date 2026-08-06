@@ -1,7 +1,3 @@
-variable "app_image" {
-  type    = string
-  default = "jeffthorne/tasky:latest"
-}
 
 resource "kubernetes_deployment" "tasky" {
   spec {
