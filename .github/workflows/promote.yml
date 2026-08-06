@@ -55,7 +55,7 @@ jobs:
       - name: Terraform Apply (Dev)
         run: |
           cd environments/dev
-          terraform init
+          terraform init -reconfigure
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
@@ -83,7 +83,7 @@ jobs:
       - name: Terraform Apply (Staging)
         run: |
           cd environments/staging
-          terraform init
+          terraform init -reconfigure
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
@@ -111,7 +111,7 @@ jobs:
       - name: Terraform Apply (Production)
         run: |
           cd environments/prod
-          terraform init
+          terraform init -reconfigure
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
