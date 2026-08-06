@@ -19,3 +19,9 @@ variable "app_image" {
   type        = string
   default     = "jeffthorne/tasky:latest"
 }
+
+variable "mongo_ip" {
+  description = "Internal IP address of the MongoDB VM"
+  type        = string
+  default     = "10.0.0.2"
+}
