@@ -42,7 +42,7 @@ resource "kubernetes_deployment_v1" "tasky" {
 
           env {
             name  = "SECRET_KEY"
-            value = "wiz-secret-key"
+            value = "wiz-secret-key-${var.environment}"
           }
         }
       }
