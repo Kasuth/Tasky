@@ -37,7 +37,7 @@ resource "kubernetes_deployment_v1" "tasky" {
 
           env {
             name  = "MONGODB_URI"
-            value = "mongodb://taskyUser:Tasky123@${var.mongo_ip}:27017/go-mongodb?authSource=admin"
+            value = "mongodb://taskyUser:Tasky123@${var.mongo_ip}:27017/tasky-${var.environment}?authSource=admin"
           }
 
           env {
