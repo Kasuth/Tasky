@@ -28,7 +28,7 @@ data "google_client_config" "default" {}
 # 2. Fetch GKE Cluster Information
 data "google_container_cluster" "gke" {
   name     = "wiz-dev-cluster"    
-  location = "us-east4-a" # e.g., "us-east4" or "us-east4-a"
+  location = "us-east4" # e.g., "us-east4" or "us-east4-a"
   project  = var.project_id
 }
 
