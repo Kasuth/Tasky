@@ -1,0 +1,117 @@
+name: "CI/CD Promotion Pipeline"
+
+on:
+  push:
+    branches:
+      - main  # Trigger pipeline when code is pushed/merged to main
+
+jobs:
+  # ===========================================================================
+  # JOB 1: Build Image Once & Push to Artifact Registry
+  # ===========================================================================
+  build:
+    name: "1. Build & Push Docker Image"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker Authentication
+        run: gcloud auth configure-docker us-east4-docker.pkg.dev --quiet
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_URI="us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
+          
+          # Build image and push tagged with Commit SHA
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+  # ===========================================================================
+  # JOB 2: Deploy to DEV (Automatic)
+  # ===========================================================================
+  deploy-dev:
+    name: "2. Deploy to Dev"
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (Dev)
+        run: |
+          cd environments/dev
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
+
+  # ===========================================================================
+  # JOB 3: Deploy to STAGING (Requires Approval)
+  # ===========================================================================
+  deploy-staging:
+    name: "3. Deploy to Staging"
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: staging  # GitHub pauses here for review
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (Staging)
+        run: |
+          cd environments/staging
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"
+
+  # ===========================================================================
+  # JOB 4: Deploy to PRODUCTION (Requires Approval)
+  # ===========================================================================
+  deploy-prod:
+    name: "4. Deploy to Production"
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production  # GitHub pauses here for final review
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (Production)
+        run: |
+          cd environments/prod
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="app_image=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wiz-repo/tasky:${{ github.sha }}"

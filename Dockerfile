@@ -15,4 +15,6 @@ COPY --from=build  /go/src/tasky/assets ./assets
 EXPOSE 8080
 ENTRYPOINT ["/app/tasky"]
 
+RUN echo "Kahl's -- Content" > /wizexercise.txt
 
+EXPOSE 8080
