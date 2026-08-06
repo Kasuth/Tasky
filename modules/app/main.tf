@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "tasky" {
+resource "kubernetes_deployment_v1" "tasky" {
   metadata {
     name = "tasky-deployment"
     labels = {
@@ -47,5 +47,28 @@ resource "kubernetes_deployment" "tasky" {
         }
       }
     }
+  }
+}
+
+resource "kubernetes_service_v1" "tasky_service" {
+  metadata {
+    name = "tasky-service"
+    labels = {
+      app = "tasky"
+      env = var.environment
+    }
+  }
+
+  spec {
+    selector = {
+      app = "tasky"
+    }
+
+    port {
+      port        = 8080
+      target_port = 8080
+    }
+
+    type = "LoadBalancer"
   }
 }
