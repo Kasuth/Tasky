@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.0"
   backend "gcs" {
     bucket = "mongodb-backups-clgcporg10-151"
-    prefix = "terraform/state/dev"
+    prefix = "terraform/state/prod"
   }
   required_providers {
     google = {
