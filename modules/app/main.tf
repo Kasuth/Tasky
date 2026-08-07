@@ -58,7 +58,7 @@ resource "kubernetes_service_v1" "tasky_service" {
     selector = {
       app = "tasky-${var.environment}"
     }
-    type = "LoadBalancer"
+    type = "NodePort"
     port {
       port        = 8080
       target_port = 8080
